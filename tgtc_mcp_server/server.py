@@ -19,7 +19,7 @@ from . import core
 
 server = MCPServer(
     name="tgtc-mcp-server",
-    version="0.1.2",
+    version="0.1.3",
     description="TGTC BSC 代币数据查询：链上安全/行情/持仓/聪明钱/推特舆情/翻译",
 )
 
@@ -60,7 +60,7 @@ def tgtc_token(ca: str, chain: str = "bsc",
                fields: Optional[List[str]] = None) -> str:
     res = core._get_client().token(ca, chain=chain,
                                    categories=categories, fields=fields)
-    return core._answer(res)
+    return core.compose_token(res)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -81,7 +81,7 @@ def tgtc_trending(chain: str = "bsc",
                   fields: Optional[List[str]] = None) -> str:
     res = core._get_client().trending(chain=chain, kind=kind,
                                       limit=limit, fields=fields)
-    return core._answer(res)
+    return core.compose_trending(res)
 
 
 @server.tool(
@@ -99,7 +99,7 @@ def tgtc_hot(chain: str = "bsc",
              fields: Optional[List[str]] = None) -> str:
     res = core._get_client().hot(chain=chain, interval=interval,
                                  limit=limit, fields=fields)
-    return core._answer(res)
+    return core.compose_hot(res)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -121,7 +121,7 @@ def tgtc_trades(chain: str = "bsc",
                 fields: Optional[List[str]] = None) -> str:
     res = core._get_client().trades(chain=chain, actor=actor, side=side,
                                     limit=limit, fields=fields)
-    return core._answer(res)
+    return core.compose_trades(res)
 
 
 @server.tool(
@@ -139,7 +139,7 @@ def tgtc_signals(chain: str = "bsc",
                  fields: Optional[List[str]] = None) -> str:
     res = core._get_client().signals(chain=chain, signal_types=signal_types,
                                      limit=limit, fields=fields)
-    return core._answer(res)
+    return core.compose_signals(res)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -166,7 +166,7 @@ def tgtc_wallet(action: Literal["profile", "stats", "profits", "activity", "crea
     res = core._get_client().wallet(action, wallet, chain=chain, period=period,
                                     token=token, limit=limit, cursor=cursor,
                                     fields=fields)
-    return core._answer(res)
+    return core.compose_wallet(res, action)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -198,7 +198,7 @@ def tgtc_twitter(action: Literal[
                                      query=query, count=count, cursor=cursor,
                                      tweet_id=tweet_id, tweet_ids=tweet_ids,
                                      include_replies=include_replies, sort=sort)
-    return core._answer(res)
+    return core.compose_twitter(res, action)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -214,7 +214,7 @@ def tgtc_twitter(action: Literal[
 @_safe
 def tgtc_sentiment(ca: str, chain: str = "bsc") -> str:
     res = core._get_client().sentiment(ca, chain=chain)
-    return core._answer(res)
+    return core.compose_sentiment(res)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -230,7 +230,7 @@ def tgtc_sentiment(ca: str, chain: str = "bsc") -> str:
 @_safe
 def tgtc_translate(action: Literal["translate", "summarize"], text: str) -> str:
     res = core._get_client().translate(action, text)
-    return core._answer(res)
+    return core.compose_translate(res)
 
 
 def main() -> None:

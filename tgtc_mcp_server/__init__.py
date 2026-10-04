@@ -3,9 +3,10 @@
 
 让 Claude / Cursor 在对话里直接查 BSC 代币：链上安全 / 行情 / 持仓 / 聪明钱 /
 钱包 / 推特 / 舆情 / 翻译——SDK 有什么能力，AI 就有什么能力。
+每个工具返回「组装卡」：关键字段精选 + 格式化 + 计费透明尾巴。
 """
 
-from .core import _answer, _dump, _get_client
+from .core import _card, _dump, _get_client
 
-__version__ = "0.1.2"
-__all__ = ["_answer", "_dump", "_get_client", "__version__"]
+__version__ = "0.1.3"
+__all__ = ["_card", "_dump", "_get_client", "__version__"]
