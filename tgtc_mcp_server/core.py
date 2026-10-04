@@ -56,7 +56,7 @@ def _pick(data: dict, *keys, default=None):
 
 
 def _fmt_money(v) -> str:
-    """金额格式化：$1.2M / $340K / $0.0012。"""
+    """金额格式化：$1.2M / $340K / $0.0012 / $0.00000453（极低价十进制，不用科学计数）。"""
     try:
         v = float(v)
     except (TypeError, ValueError):
@@ -69,7 +69,7 @@ def _fmt_money(v) -> str:
         x = v / 1e3
         return f"${x:.0f}K" if x == int(x) else f"${x:.1f}K"
     if v and v < 0.01:
-        return f"${v:.6g}"
+        return f"${f'{v:.10f}'.rstrip('0').rstrip('.')}"
     return f"${v:.4g}"
 
 
@@ -169,7 +169,10 @@ def compose_trending(res: Result) -> str:
         price = _fmt_money(_pick(it, "price"))
         mcap = _fmt_money(_pick(it, "mcap", "market_cap"))
         chg = _fmt_pct(_pick(it, "chg_24h_pct", "chg_1h_pct"))
-        rows.append(f"{sym} · {price} · 市值 {mcap} · 24h {chg}")
+        row = f"{sym} · {price} · 市值 {mcap}"
+        if "?" not in chg:
+            row += f" · 24h {chg}"
+        rows.append(row)
     rows.append(f"共 {len(items)} 条，以上为前 {min(len(items), 10)} 条")
     return _card("TGTC 代币榜单", rows, res)
 
@@ -183,7 +186,10 @@ def compose_hot(res: Result) -> str:
         price = _fmt_money(_pick(it, "price"))
         mcap = _fmt_money(_pick(it, "mcap", "market_cap"))
         chg = _fmt_pct(_pick(it, "chg_1h_pct", "chg_5m_pct"))
-        rows.append(f"{sym} · {price} · 市值 {mcap} · 1h {chg}")
+        row = f"{sym} · {price} · 市值 {mcap}"
+        if "?" not in chg:
+            row += f" · 1h {chg}"
+        rows.append(row)
     rows.append(f"共 {len(items)} 条，以上为前 {min(len(items), 10)} 条")
     return _card("TGTC 热门搜索榜", rows, res)
 

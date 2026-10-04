@@ -43,7 +43,7 @@ INSTRUCTIONS = """你是 TGTC 数据助手。需要 BSC 代币数据时使用 tg
 
 server = MCPServer(
     name="tgtc-mcp-server",
-    version="0.1.8",
+    version="0.1.9",
     description="TGTC BSC 代币数据查询：链上安全/行情/持仓/聪明钱/推特舆情/翻译",
     instructions=INSTRUCTIONS,
 )
