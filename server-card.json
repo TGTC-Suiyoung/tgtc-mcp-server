@@ -1,0 +1,24 @@
+{
+  "servers": [
+    {
+      "name": "tgtc",
+      "description": "TGTC BSC token data: on-chain security, quotes, holders, smart-money moves, wallet analytics, Twitter sentiment & AI analysis — 9 tools.",
+      "url": "https://www.tgtcbot.com/mcp",
+      "auth": {
+        "type": "bearer",
+        "instructions": "Bearer Token：在 TGTC Bot 个人中心 → 我的 API 创建 API Key 后填入（new users get free credits）"
+      },
+      "toolNames": [
+        "tgtc_token",
+        "tgtc_trending",
+        "tgtc_hot",
+        "tgtc_trades",
+        "tgtc_signals",
+        "tgtc_wallet",
+        "tgtc_twitter",
+        "tgtc_sentiment",
+        "tgtc_translate"
+      ]
+    }
+  ]
+}
