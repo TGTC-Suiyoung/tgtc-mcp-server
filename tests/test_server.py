@@ -112,6 +112,15 @@ def test_list_tools_count():
     print(f"PASS registered 9 tools with rich descriptions")
 
 
+def test_instructions_present():
+    """话术层（Skills 并入）：server 带 instructions，AI 客户端会注入上下文。"""
+    ins = srv.server.instructions or ""
+    for frag in ("tgtc_sentiment", "静态检查，非投资建议", "能冲", "脱敏",
+                 "tgtc_token + tgtc_sentiment"):
+        assert frag in ins, (frag, ins[:200])
+    print("PASS instructions (话术层并入 MCP)")
+
+
 def test_no_key_friendly_error():
     """未配置 Key：工具应给出友好引导而非裸异常。"""
     env_backup = dict(os.environ)
@@ -146,6 +155,7 @@ if __name__ == "__main__":
     test_all_nine_tools()
     test_token_card_fields()
     test_list_tools_count()
+    test_instructions_present()
     test_no_key_friendly_error()
     test_dump_truncation()
     print("ALL_TESTS_PASSED")
