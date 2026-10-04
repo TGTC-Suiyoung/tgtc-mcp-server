@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tgtc-mcp-server"
+version = "0.1.0"
+description = "让 Claude / Cursor 一句话查 BSC 代币数据：tgtc-sdk 的 MCP Server（完整 9 工具版）"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+dependencies = [
+    "mcp>=2.0",
+    "tgtc-sdk>=0.2.1",
+]
+
+[project.scripts]
+tgtc-mcp-server = "tgtc_mcp_server.server:main"
+
+[project.urls]
+Homepage = "https://www.tgtcbot.com"
+Source = "https://github.com/TGTC-Suiyoung/tgtc-mcp-server"
+
+[tool.setuptools.packages.find]
+include = ["tgtc_mcp_server*"]
