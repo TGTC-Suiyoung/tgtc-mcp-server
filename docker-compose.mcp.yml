@@ -9,7 +9,7 @@
 
 services:
   mcp:
-    image: tgtc-mcp-server:0.1.5
+    image: tgtc-mcp-server:0.1.8
     build:
       context: .
       dockerfile: Dockerfile
