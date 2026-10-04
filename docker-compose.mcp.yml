@@ -11,7 +11,8 @@
   mcp:
     image: tgtc-mcp-server:0.1.4
     build:
-      context: ./mcp
+      context: .
+      dockerfile: Dockerfile
     container_name: tgtc_mcp
     environment:
       - TGTC_API_KEY=${TGTC_API_KEY}
