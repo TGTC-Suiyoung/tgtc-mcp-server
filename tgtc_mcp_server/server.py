@@ -243,6 +243,11 @@ def main_http(host: str = "0.0.0.0", port: int = 8765) -> None:
 
     每个请求必须带 Authorization: Bearer <TGTC_API_KEY>（同一把 Key 即门禁即扣次凭证）。
     部署：独立容器 + nginx 反代 HTTPS 到本端口。
+
+    已知坑（mcp 2.x）：streamable_http_app 会校验请求 Host 头必须等于容器地址
+    （默认 127.0.0.1:8765）。nginx 反代时必须固定 Host：
+        proxy_set_header Host 127.0.0.1:8765;
+    若透传真实域名（proxy_set_header Host $host）会返回 "Invalid Host header"。
     """
     import os
 
