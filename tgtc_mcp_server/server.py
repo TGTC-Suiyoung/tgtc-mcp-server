@@ -19,7 +19,7 @@ from . import core
 
 server = MCPServer(
     name="tgtc-mcp-server",
-    version="0.1.0",
+    version="0.1.1",
     description="TGTC BSC 代币数据查询：链上安全/行情/持仓/聪明钱/推特舆情/翻译",
 )
 
@@ -50,7 +50,7 @@ def _safe(fn):
         "安全审计（honeypot/权限/税率）、持有人、社交信息、聪明钱动向。"
         "参数 ca 必须是 0x 开头的 40 位十六进制合约地址；categories 可选值："
         "basic(行情)/structure(持仓)/holders(持有人)/security(安全)/social(社交)/traders(聪明钱)，"
-        "缺省返回全部；categories 与 fields 互斥，二选一。"
+        "缺省返回全部；categories 与 fields 互斥，二选一，fields 用于精确裁剪响应字段。"
         "安全字段是静态检查，不代表可卖出。"
     ),
 )
@@ -71,6 +71,7 @@ def tgtc_token(ca: str, chain: str = "bsc",
     description=(
         "BSC 代币榜单。kind 可选：new(新创建)/launch(新发射)/graduating(即将毕业)，"
         "默认 new；limit 1~100，默认 20。返回条目数组，可用于发现新币。"
+        "支持 fields 参数精确裁剪响应字段（可选）。"
     ),
 )
 @_safe
@@ -88,6 +89,7 @@ def tgtc_trending(chain: str = "bsc",
     description=(
         "BSC 热门搜索榜单。interval 可选：1m/5m/1h/6h/24h（统计区间），默认 1h；"
         "limit 1~100，默认 50。返回条目数组，可用于发现社区正在关注的项目。"
+        "支持 fields 参数精确裁剪响应字段（可选）。"
     ),
 )
 @_safe
@@ -108,6 +110,7 @@ def tgtc_hot(chain: str = "bsc",
     description=(
         "聪明钱 / KOL 实时交易流。actor 可选 smartmoney(聪明钱)/kol(KOL)，默认 smartmoney；"
         "side 可选 buy/sell 过滤方向；limit 1~200，默认 20（防烧次数，建议保持默认）。"
+        "支持 fields 参数精确裁剪响应字段（可选）。"
     ),
 )
 @_safe
@@ -126,7 +129,7 @@ def tgtc_trades(chain: str = "bsc",
     description=(
         "BSC 市场信号流：新币异动/聪明钱行为等信号，缺省返回全部支持类型。"
         "signal_types 可选传数字 ID 列表（如 [20]）缩小范围；limit 1~200，默认 20。"
-        "每条信号带触发时刻快照。"
+        "每条信号带触发时刻快照。支持 fields 参数精确裁剪响应字段（可选）。"
     ),
 )
 @_safe
@@ -149,6 +152,7 @@ def tgtc_signals(chain: str = "bsc",
         "activity(活动记录，支持 cursor 翻页)/created(创建过的代币)/balance(持仓余额)。"
         "wallet 必须是 0x 开头的 40 位十六进制地址；period 可选 1d/7d/30d，默认 7d；"
         "action=balance 时必填 token（持仓代币地址）；limit 1~100，默认 10。"
+        "支持 fields 参数精确裁剪响应字段（可选）。"
     ),
 )
 @_safe
@@ -177,6 +181,7 @@ def tgtc_wallet(action: Literal["profile", "stats", "profits", "activity", "crea
         "tweet.replies(回复)/tweet.quotes(引用)/tweet.retweets(转推)/tweet.thread(串)。"
         "参数规则：user.* 需 username 或 user_id；user.search/tweet.search 需 query；"
         "tweet.* 需 tweet_id（tweet.detail 也支持 tweet_ids 列表）；count 1~100。"
+        "支持 fields 参数精确裁剪响应字段（可选）。"
     ),
 )
 @_safe
