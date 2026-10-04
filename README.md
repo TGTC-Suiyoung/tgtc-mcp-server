@@ -103,14 +103,15 @@ Cursor Agent 模式自动识别，敏感调用会先请求确认。
 
 ## 远程 hosted 版（网页 AI 接入）
 
-本地 stdio 只服务桌面 AI 客户端；要在网页版 AI（千问 / 元宝 / 豆包等）里使用，用 hosted 版（已上线）：
+本地 stdio 只服务桌面 AI 客户端；要在网页版 AI（千问 / 元宝 / 豆包等）里使用，用 hosted 版（已上线）。在支持 MCP 的 AI 客户端里配置：
 
-```
-URL: https://www.tgtcbot.com/mcp
-鉴权: Bearer Token → 你的 API Key
-```
+| 配置项 | 值 |
+| --- | --- |
+| URL / 服务器地址 | `https://www.tgtcbot.com/mcp` |
+| 鉴权类型 | Bearer Token（或 API Key / 自定义 Header） |
+| Token / Key | `sk_live_...`（你的 API Key） |
 
-AI 客户端接入：URL 填上面地址，鉴权选 Bearer，令牌填你的 API Key。配置后对话框输 CA 即可触发查询。
+按上表配置后，对话框输 CA 即可触发查询（会话初始化由 AI 客户端自动处理）。
 
 **自托管（可选）**：想部署自己的实例，用仓库里的 `Dockerfile` + `docker-compose.mcp.yml`（独立容器，内存上限 200M）：
 

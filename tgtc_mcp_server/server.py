@@ -19,7 +19,7 @@ from . import core
 
 server = MCPServer(
     name="tgtc-mcp-server",
-    version="0.1.6",
+    version="0.1.7",
     description="TGTC BSC 代币数据查询：链上安全/行情/持仓/聪明钱/推特舆情/翻译",
 )
 
