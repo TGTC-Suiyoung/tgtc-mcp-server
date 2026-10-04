@@ -8,5 +8,5 @@
 
 from .core import _card, _dump, _get_client
 
-__version__ = "0.1.9"
+__version__ = "0.1.10"
 __all__ = ["_card", "_dump", "_get_client", "__version__"]

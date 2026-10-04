@@ -3,7 +3,7 @@
 FROM python:3.11-slim
 
 # 固定版本：避免 Docker 层缓存让容器停在旧版（pip install 不带版本 → 缓存命中永不更新）
-RUN pip install --no-cache-dir tgtc-mcp-server==0.1.9 && \
+RUN pip install --no-cache-dir tgtc-mcp-server==0.1.10 && \
     useradd --create-home --uid 10001 mcpuser
 
 USER mcpuser
