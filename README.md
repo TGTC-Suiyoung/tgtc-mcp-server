@@ -4,9 +4,11 @@
 
 在 AI 客户端里直接查 BSC 链上安全 / 行情 / 持仓 / 聪明钱 / 钱包 / 推特舆情 / 翻译——SDK 有什么能力，AI 就有什么能力（完整 9 工具版）。
 
+> **Hosted 版已上线**：https://www.tgtcbot.com/mcp —— 所有支持 MCP 的 AI 客户端可直接配置接入（URL + Bearer）。
+
 ## 为什么用 MCP
 
-MCP（Model Context Protocol）是 AI 领域的通用接入标准——**一次接入，所有支持本地 MCP 的 AI 客户端都能用你的数据**：Claude Desktop、Cursor、Qoder CN 等，不需要为每个 AI 单独写集成。开发者装好之后，在对话里说一句「查一下这个 CA」，AI 自己决定调用你的工具、拿真实数据回答。
+MCP（Model Context Protocol）是 AI 领域的通用接入标准——**一次接入，所有支持 MCP 的 AI 客户端都能用你的数据**：Claude Desktop、Cursor、Qoder CN 以及网页版 AI（经 hosted URL）。开发者装好之后，在对话里说一句「查一下这个 CA」，AI 自己决定调用你的工具、拿真实数据回答。
 
 ## 它能做什么
 
@@ -22,7 +24,36 @@ MCP（Model Context Protocol）是 AI 领域的通用接入标准——**一次�
 | `tgtc_sentiment` | CA 舆情：热度评级 + AI 解读 + 提及数据 |
 | `tgtc_translate` | AI 翻译 / 摘要（输出中文） |
 
-每个工具的参数、可选值、限制条件都写在工具描述里——AI 能精确理解「查什么、怎么查、有什么约束」。
+## 组装卡输出
+
+每个工具返回**组装卡**——关键字段精选 + 格式化 + 计费尾巴，AI 拿到直接引用，不用解析原始 JSON。示例（`tgtc_sentiment` 真实输出）：
+
+```
+TGTC CA 舆情
+· 热度评级：中（提及20条，互动率1%）
+一句话理由：提及20条，总阅读10617，互动率1%，显示中等热度。
+舆情摘要：讨论BSC代币合约0xcb975f...，社区关注其涨跌，部分推文涉及拉票活动。
+关键信号：
+⚠ 风险/异常：互动率低，可能存在拉票或刷量行为。
+📉 数据信号：阅读量与互动量不成比例，需关注真实用户参与度。
+🧐 观察：话题集中度较高，多围绕代币涨跌和拉票活动。
+· 提及推文 20 条 · 总阅读 10617 · 最高单条 1559
+[TGTC] remaining=490 used=10 cache_hit=False · 非投资建议 · tgtcbot.com
+```
+
+## 参数速查表
+
+| 工具 | 必填 | 关键参数（可选） | limit 范围 |
+| --- | --- | --- | --- |
+| `tgtc_token` | ca | categories（basic/structure/holders/security/social/traders），与 fields 互斥 | — |
+| `tgtc_trending` | — | kind（new/launch/graduating） | 1~100，默认 20 |
+| `tgtc_hot` | — | interval（1m/5m/1h/6h/24h） | 1~100，默认 50 |
+| `tgtc_trades` | — | actor（smartmoney/kol）、side（buy/sell） | 1~200，默认 20 |
+| `tgtc_signals` | — | signal_types（数字 ID 列表） | 1~200，默认 20 |
+| `tgtc_wallet` | action + wallet | period（1d/7d/30d）；balance 需 token | 1~100，默认 10 |
+| `tgtc_twitter` | action | user.* 需 username/user_id；search 需 query；tweet.* 需 tweet_id | count 1~100 |
+| `tgtc_sentiment` | ca | — | — |
+| `tgtc_translate` | action + text | text 最长 2000 字符 | — |
 
 ## 安装与配置
 
@@ -70,18 +101,26 @@ Cursor Agent 模式自动识别，敏感调用会先请求确认。
 
 同样方式接入：添加 MCP 服务时选 **STDIO 类型**，命令填 `uvx`，参数填 `tgtc-mcp-server`，环境变量填 `TGTC_API_KEY`。
 
-## 远程 hosted 版（可选，部署到服务器）
+## 远程 hosted 版（网页 AI 接入）
 
-本地 stdio 只服务桌面 AI 客户端；要在网页版 AI（千问 / 元宝 / 豆包等）里使用，把 MCP server 托管到你的服务器（streamable-http 模式）：
+本地 stdio 只服务桌面 AI 客户端；要在网页版 AI（千问 / 元宝 / 豆包等）里使用，用 hosted 版（已上线）：
+
+```
+URL: https://www.tgtcbot.com/mcp
+鉴权: Bearer Token → 你的 API Key
+```
+
+AI 客户端接入：URL 填上面地址，鉴权选 Bearer，令牌填你的 API Key。配置后对话框输 CA 即可触发查询。
+
+**自托管（可选）**：想部署自己的实例，用仓库里的 `Dockerfile` + `docker-compose.mcp.yml`（独立容器，内存上限 200M）：
 
 ```bash
-# Docker 独立容器部署，内存上限 200M
-docker compose -f docker-compose.mcp.yml up -d
+docker compose -f docker-compose.mcp.yml up -d --build
 ```
 
 - 端口只绑 `127.0.0.1`，公网流量走 nginx 反代（见 `nginx.mcp.conf`）
-- 每个请求需 `Authorization: Bearer <你的 API Key>`——同一把 Key 即门禁、即扣次凭证
-- AI 客户端接入：URL 填 `https://你的域名/mcp`，鉴权选 Bearer，令牌填你的 API Key
+- **nginx 必须固定 Host**：`proxy_set_header Host 127.0.0.1:8765;`（mcp 2.x 校验 Host 头，透传真实域名会返回 Invalid Host header）
+- **内置防护**：Bearer 门禁、会话上限 200 / 空闲 600s（防会话洪泛）、非 root 容器、nginx 限流 10r/s（`limit_req`）
 
 ## 对话示例
 
@@ -102,18 +141,28 @@ docker compose -f docker-compose.mcp.yml up -d
 每次调用返回都带剩余次数与本次扣次——AI 会把它带进回答，余额一眼可见：
 
 ```
-[TGTC] remaining=9800 used=1 cache_hit=false · 不是投资建议 · Key: tgtcbot.com
+[TGTC] remaining=9800 used=1 cache_hit=false · 非投资建议 · Key: tgtcbot.com
 ```
 
 - 缓存命中不扣次
 - 参数错误（422）不扣次
 - 每次调用按你的 Key 扣次，消耗的是你自己的次数
 
+## 故障排查
+
+| 现象 | 原因 | 解法 |
+| --- | --- | --- |
+| `401 Unauthorized` | Bearer 缺失/错误，或服务端未配置 Key | 检查 `TGTC_API_KEY` 与请求头 `Authorization: Bearer <Key>` |
+| `Missing session ID` | streamable-http 会话机制 | 先 `initialize` 拿 `Mcp-Session-Id`（AI 客户端自动处理） |
+| `Invalid Host header` | mcp 2.x 校验 Host 头 | nginx 固定 `Host 127.0.0.1:8765`（自托管时） |
+| `503` | nginx 限流超限（10r/s） | 正常防护，稍后重试 |
+| `429` | Key 余额不足 | 充值后再试 |
+
 ## 安全
 
-- 本地 stdio 模式，不暴露任何远程端口
-- Key 只存在于你自己的环境变量，不进代码、不进日志
-- 每个工具按你 Key 的扣次模型计费
+- 本地 stdio 不暴露任何端口；hosted 版 Bearer 门禁 + 会话限制 + 非 root 容器 + nginx 限流
+- Key 只存在于环境变量，不进代码、不进日志
+- 9 个工具全只读查询，无 shell/exec/文件操作
 
 ## 开发
 

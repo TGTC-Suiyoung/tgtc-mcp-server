@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tgtc-mcp-server"
-version = "0.1.5"
+version = "0.1.6"
 description = "让 Claude / Cursor / 千问 / 元宝 一句话查 BSC 代币数据：tgtc-sdk 的 MCP Server（完整 9 工具版 + hosted 远程模式）"
 readme = "README.md"
 requires-python = ">=3.10"
