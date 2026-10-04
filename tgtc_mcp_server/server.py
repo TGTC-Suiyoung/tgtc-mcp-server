@@ -19,7 +19,7 @@ from . import core
 
 server = MCPServer(
     name="tgtc-mcp-server",
-    version="0.1.3",
+    version="0.1.4",
     description="TGTC BSC 代币数据查询：链上安全/行情/持仓/聪明钱/推特舆情/翻译",
 )
 
@@ -236,6 +236,37 @@ def tgtc_translate(action: Literal["translate", "summarize"], text: str) -> str:
 def main() -> None:
     """stdio 入口（Claude Desktop / Cursor 本地 MCP 配置用）。"""
     server.run()
+
+
+def main_http(host: str = "0.0.0.0", port: int = 8765) -> None:
+    """streamable-http 入口（hosted 远程版）。
+
+    每个请求必须带 Authorization: Bearer <TGTC_API_KEY>（同一把 Key 即门禁即扣次凭证）。
+    部署：独立容器 + nginx 反代 HTTPS 到本端口。
+    """
+    import os
+
+    import uvicorn
+    from starlette.middleware.base import BaseHTTPMiddleware
+    from starlette.responses import JSONResponse
+
+    mcp_app = server.streamable_http_app(streamable_http_path="/mcp")
+    key = os.environ.get("TGTC_API_KEY") or os.environ.get("API_KEY") or ""
+
+    class _BearerAuth(BaseHTTPMiddleware):
+        async def dispatch(self, request, call_next):
+            if not key:
+                return JSONResponse(
+                    {"detail": "服务端未配置 TGTC_API_KEY，请检查环境变量"},
+                    status_code=503)
+            if request.headers.get("authorization") != f"Bearer {key}":
+                return JSONResponse(
+                    {"detail": "未授权：请求头需 Authorization: Bearer <你的 API Key>"},
+                    status_code=401)
+            return await call_next(request)
+
+    mcp_app.add_middleware(_BearerAuth)
+    uvicorn.run(mcp_app, host=host, port=port, log_level="info")
 
 
 if __name__ == "__main__":

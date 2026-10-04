@@ -1,0 +1,27 @@
+# ============================================================
+# tgtc-mcp-server hosted 远程版 —— docker-compose 服务片段
+# 加入你现有的 compose 文件（与 bsc_smart 等服务并列）
+#
+# 要点：
+#  · 端口只绑 127.0.0.1 —— 公网流量走 nginx 反代（见 nginx.conf 片段）
+#  · mem_limit 200m —— 弹性内存上限（用户要求）
+#  · TGTC_API_KEY 用宿主 .env 传入（运营 Key：既是 Bearer 门禁也是转发扣次凭证）
+# ============================================================
+
+  mcp:
+    image: tgtc-mcp-server:0.1.4
+    build:
+      context: ./mcp
+    container_name: tgtc_mcp
+    environment:
+      - TGTC_API_KEY=${TGTC_API_KEY}
+    ports:
+      - "127.0.0.1:8765:8765"
+    mem_limit: 200m
+    restart: unless-stopped
+    networks:
+      - default
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"

@@ -70,6 +70,19 @@ Cursor Agent 模式自动识别，敏感调用会先请求确认。
 
 同样方式接入：添加 MCP 服务时选 **STDIO 类型**，命令填 `uvx`，参数填 `tgtc-mcp-server`，环境变量填 `TGTC_API_KEY`。
 
+## 远程 hosted 版（可选，部署到服务器）
+
+本地 stdio 只服务桌面 AI 客户端；要在网页版 AI（千问 / 元宝 / 豆包等）里使用，把 MCP server 托管到你的服务器（streamable-http 模式）：
+
+```bash
+# Docker 独立容器部署，内存上限 200M
+docker compose -f docker-compose.mcp.yml up -d
+```
+
+- 端口只绑 `127.0.0.1`，公网流量走 nginx 反代（见 `nginx.mcp.conf`）
+- 每个请求需 `Authorization: Bearer <你的 API Key>`——同一把 Key 即门禁、即扣次凭证
+- AI 客户端接入：URL 填 `https://你的域名/mcp`，鉴权选 Bearer，令牌填你的 API Key
+
 ## 对话示例
 
 > **用户**：这个 0xbbc9...7777 能碰吗？

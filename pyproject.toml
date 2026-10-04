@@ -4,18 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tgtc-mcp-server"
-version = "0.1.3"
-description = "让 Claude / Cursor 一句话查 BSC 代币数据：tgtc-sdk 的 MCP Server（完整 9 工具版）"
+version = "0.1.4"
+description = "让 Claude / Cursor / 千问 / 元宝 一句话查 BSC 代币数据：tgtc-sdk 的 MCP Server（完整 9 工具版 + hosted 远程模式）"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 dependencies = [
     "mcp>=2.0",
-    "tgtc-sdk>=0.2.1",
+    "tgtc-sdk>=0.2.2",
+    "uvicorn>=0.30",
 ]
 
 [project.scripts]
 tgtc-mcp-server = "tgtc_mcp_server.server:main"
+tgtc-mcp-server-http = "tgtc_mcp_server.server:main_http"
 
 [project.urls]
 Homepage = "https://www.tgtcbot.com"
